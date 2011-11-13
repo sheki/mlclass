@@ -52,7 +52,7 @@ for i = 1:m;
 endfor;
 
 diff_sum =-(diff_sum/m);
-diff_sum = diff_sum + lambda*( sum(nn_params.^2)) /(2*m);
+diff_sum = diff_sum + lambda*( sum(nn_params.^2)-sum(Theta1(:,1).^2) -sum(Theta2(:,1).^2)) /(2*m);
 disp(diff_sum);
 J = diff_sum;
 % ====================== YOUR CODE HERE ======================
