@@ -24,30 +24,30 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
-disp(size(Theta1))      
-disp(size(Theta2))
 % You need to return the following variables correctly 
 J = 0;
 Theta1_grad = zeros(size(Theta1));
 Theta2_grad = zeros(size(Theta2));
+
 Y = zeros(length(y),num_labels);
 for i = 1:length(y) 
     Y(i,y(i))=1;
 endfor;
 y=Y;
+w=X
 X = [ ones(size(X,1),1) X];
 z1 = X*Theta1'; 
 a1 = sigmoid(z1);
 a1 = [ ones(size(a1,1),1) a1];
 z2 = a1 * Theta2';
 a2 = sigmoid(z2);
-diff_sum=0
+diff_sum=0;
 
 
 %TODO need to vectorize this.
 for i = 1:m;
-    aa = y(i,:)
-    bb = a2(i,:)
+    aa = y(i,:);
+    bb = a2(i,:);
     diff_sum += aa*log(bb)' +(1-aa) * log(1-bb)'; 
 endfor;
 
@@ -55,7 +55,35 @@ diff_sum =-(diff_sum/m);
 diff_sum = diff_sum + lambda*( sum(nn_params.^2)-sum(Theta1(:,1).^2) -sum(Theta2(:,1).^2)) /(2*m);
 disp(diff_sum);
 J = diff_sum;
-% ====================== YOUR CODE HERE ======================
+
+d3 = a2 - y;
+
+for i = 1:m
+    z_2 = z1(i,:);
+    d_3 =d3(i,:);
+    a_2 = a1(i,:);
+    a_1 = X(i,:);
+    disp("THETA2 ,d3, z_2") , disp(size(Theta2)),disp(size(d_3)), disp(size(z_2))
+    d_2 = (Theta2' *d_3') ; 
+    d_2 = d_2(2:end);
+    d_2 = d_2.*sigmoidGradient(z_2');
+    t1=d_3' *a_2;
+    Theta2_grad += t1;  
+    t2= d_2 *a_1;
+    Theta1_grad +=t2; 
+endfor
+Theta1_grad = Theta1_grad/m;
+Theta2_grad = Theta2_grad/m;
+t1 = Theta1;
+t1(:,1)=zeros(size(t1,1),1);
+Theta1_grad += (lambda/m)*t1;
+t2=Theta2;
+t2(:,1)=zeros(size(t2,1),1);
+
+Theta2_grad +=(lambda/m)*t2;
+    % ====================== YOUR CODE HERE ======================
+
+
 % Instructions: You should complete the code by working through the
 %               following parts.
 
@@ -88,13 +116,10 @@ J = diff_sum;
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
-
 % -------------------------------------------------------------
 
 % =========================================================================
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
-
 end
