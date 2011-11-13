@@ -24,16 +24,43 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
-         
+disp(size(Theta1))      
+disp(size(Theta2))
 % You need to return the following variables correctly 
 J = 0;
 Theta1_grad = zeros(size(Theta1));
 Theta2_grad = zeros(size(Theta2));
+Y = zeros(length(y),num_labels);
+for i = 1:length(y) 
+    Y(i,y(i))=1;
+endfor;
+y=Y;
+X = [ ones(size(X,1),1) X];
+z1 = X*Theta1'; 
+a1 = sigmoid(z1);
+a1 = [ ones(size(a1,1),1) a1];
+z2 = a1 * Theta2';
+a2 = sigmoid(z2);
+diff_sum=0
 
+
+%TODO need to vectorize this.
+for i = 1:m;
+    aa = y(i,:)
+    bb = a2(i,:)
+    diff_sum += aa*log(bb)' +(1-aa) * log(1-bb)'; 
+endfor;
+
+diff_sum =-(diff_sum/m);
+diff_sum = diff_sum + lambda*( sum(nn_params.^2)) /(2*m);
+disp(diff_sum);
+J = diff_sum;
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the code by working through the
 %               following parts.
-%
+
+
+
 % Part 1: Feedforward the neural network and return the cost in the
 %         variable J. After implementing Part 1, you can verify that your
 %         cost function computation is correct by verifying the cost
@@ -61,24 +88,6 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 % -------------------------------------------------------------
 
